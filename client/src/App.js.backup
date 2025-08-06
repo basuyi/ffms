@@ -1,0 +1,46 @@
+import React, { useState, useCallback, useEffect } from 'react';
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  MiniMap,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
+
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  Container,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Fab,
+  Snackbar,
+  Alert
+} from '@mui/material';
+import {
+  PlayArrow as PlayIcon,
+  Save as SaveIcon,
+  Add as AddIcon,
+  FolderOpen as OpenIcon
+} from '@mui/icons-material';
+
+import NodePanel from './components/NodePanel';
+import NodePropertiesPanel from './components/NodePropertiesPanel';
+import WorkflowList from './components/WorkflowList';
+import ExecutionPanel from './components/ExecutionPanel';
+import CustomNode from './components/CustomNode';
+import './App.css';
