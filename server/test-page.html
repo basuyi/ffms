@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连接测试 - 工作流编辑器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .title {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: rgba(40, 167, 69, 0.8); }
+        .error { background: rgba(220, 53, 69, 0.8); }
+        .warning { background: rgba(255, 193, 7, 0.8); color: black; }
+        .btn {
+            background: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { background: #218838; }
+        .btn-primary { background: #007bff; }
+        .btn-primary:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">🔍 工作流编辑器连接测试</div>
+        
+        <div class="test-section">
+            <h3>📡 服务器状态检测</h3>
+            <div id="server-status" class="status warning">正在检测服务器状态...</div>
+            <button class="btn" onclick="testServer()">重新检测</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 API功能测试</h3>
+            <div id="api-status" class="status warning">准备测试API...</div>
+            <button class="btn" onclick="testAPI()">测试API</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🚀 访问工作流编辑器</h3>
+            <p>如果上述测试通过，点击下面的链接访问完整应用：</p>
+            <a href="/" class="btn btn-primary">🎨 打开工作流编辑器</a>
+            <a href="/api/node-types" class="btn" target="_blank">📋 查看API数据</a>
+        </div>
+
+        <div class="test-section">
+            <h3>💡 问题排查指南</h3>
+            <ul style="text-align: left;">
+                <li><strong>清除浏览器缓存</strong>：按 Ctrl+F5 强制刷新</li>
+                <li><strong>尝试不同浏览器</strong>：Chrome、Firefox、Edge等</li>
+                <li><strong>检查网络</strong>：确保没有代理或VPN干扰</li>
+                <li><strong>防火墙设置</strong>：确保端口3001未被阻止</li>
+                <li><strong>备用地址</strong>：尝试 http://127.0.0.1:3001</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 系统信息</h3>
+            <div id="system-info">
+                <p>当前时间: <span id="current-time"></span></p>
+                <p>用户代理: <span id="user-agent"></span></p>
+                <p>页面地址: <span id="page-url"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 更新系统信息
+        function updateSystemInfo() {
+            document.getElementById('current-time').textContent = new Date().toLocaleString();
+            document.getElementById('user-agent').textContent = navigator.userAgent;
+            document.getElementById('page-url').textContent = window.location.href;
+        }
+
+        // 测试服务器连接
+        async function testServer() {
+            const statusDiv = document.getElementById('server-status');
+            statusDiv.textContent = '🔍 正在检测服务器...';
+            statusDiv.className = 'status warning';
+
+            try {
+                const response = await fetch('/api/node-types');
+                if (response.ok) {
+                    statusDiv.textContent = '✅ 服务器连接正常！';
+                    statusDiv.className = 'status success';
+                } else {
+                    statusDiv.textContent = `⚠️ 服务器响应异常: ${response.status}`;
+                    statusDiv.className = 'status error';
+                }
+            } catch (error) {
+                statusDiv.textContent = `❌ 服务器连接失败: ${error.message}`;
+                statusDiv.className = 'status error';
+            }
+        }
+
+        // 测试API功能
+        async function testAPI() {
+            const statusDiv = document.getElementById('api-status');
+            statusDiv.textContent = '🧪 正在测试API...';
+            statusDiv.className = 'status warning';
+
+            try {
+                const response = await fetch('/api/node-types');
+                const data = await response.json();
+                
+                if (data && typeof data === 'object') {
+                    const nodeCount = Object.keys(data).length;
+                    statusDiv.textContent = `✅ API测试成功！发现 ${nodeCount} 种节点类型`;
+                    statusDiv.className = 'status success';
+                } else {
+                    statusDiv.textContent = '⚠️ API数据格式异常';
+                    statusDiv.className = 'status error';
+                }
+            } catch (error) {
+                statusDiv.textContent = `❌ API测试失败: ${error.message}`;
+                statusDiv.className = 'status error';
+            }
+        }
+
+        // 页面加载时自动测试
+        window.onload = function() {
+            updateSystemInfo();
+            setTimeout(testServer, 500);
+            setTimeout(testAPI, 1000);
+        };
+    </script>
+</body>
+</html>

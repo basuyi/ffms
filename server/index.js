@@ -258,6 +258,11 @@ async function executeNode(workflow, execution, node) {
   }
 }
 
+// 测试页面路由
+app.get('/test', (req, res) => {
+  res.sendFile(path.join(__dirname, 'test-page.html'));
+});
+
 // 静态文件路由（生产模式）
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build/index.html'));
@@ -265,6 +270,10 @@ app.get('*', (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`服务器运行在端口 ${PORT}`);
+  console.log(`访问地址:`);
+  console.log(`  http://localhost:${PORT}`);
+  console.log(`  http://127.0.0.1:${PORT}`);
+  console.log(`  http://0.0.0.0:${PORT}`);
 });
