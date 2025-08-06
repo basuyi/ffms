@@ -1,0 +1,192 @@
+.App {
+  text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* React Flow 自定义样式 */
+.react-flow__node {
+  font-family: 'Roboto', sans-serif;
+}
+
+.react-flow__handle {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.react-flow__node:hover .react-flow__handle {
+  opacity: 1;
+}
+
+.react-flow__edge {
+  stroke-width: 2;
+}
+
+.react-flow__edge.selected {
+  stroke-width: 3;
+}
+
+/* 自定义节点状态动画 */
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7);
+  }
+  
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(255, 152, 0, 0);
+  }
+  
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 152, 0, 0);
+  }
+}
+
+.executing {
+  animation: pulse 2s infinite;
+}
+
+/* 节点工具栏样式 */
+.node-toolbar {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 4px;
+  display: flex;
+  gap: 4px;
+}
+
+.node-toolbar button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.node-toolbar button:hover {
+  background-color: #f5f5f5;
+}
+
+/* 连接线样式 */
+.react-flow__edge-path {
+  stroke: #b1b1b7;
+  stroke-width: 2;
+}
+
+.react-flow__edge.animated path {
+  stroke-dasharray: 5;
+  animation: dashdraw 0.5s linear infinite;
+}
+
+.react-flow__edge.selected path {
+  stroke: #555;
+}
+
+@keyframes dashdraw {
+  from {
+    stroke-dashoffset: 10;
+  }
+}
+
+/* 小地图样式 */
+.react-flow__minimap {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+}
+
+.react-flow__minimap-mask {
+  fill: rgba(33, 150, 243, 0.1);
+  stroke: #2196f3;
+}
+
+/* 控制按钮样式 */
+.react-flow__controls {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.react-flow__controls-button {
+  background: white;
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.react-flow__controls-button:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none;
+}
+
+/* 加载状态样式 */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .App {
+    height: 100vh;
+  }
+  
+  .node-properties-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    z-index: 1000;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  }
+}
