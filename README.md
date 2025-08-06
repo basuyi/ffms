@@ -52,18 +52,28 @@ cd client && npm install
 
 ### 启动应用
 
-#### 方法一：同时启动前后端
+#### 方法一：使用启动脚本（推荐）
+```bash
+./start.sh
+```
+
+#### 方法二：同时启动前后端
 ```bash
 npm run dev
 ```
 
-#### 方法二：分别启动
+#### 方法三：分别启动
 ```bash
 # 启动后端服务器（端口 3001）
 npm run server
 
 # 启动前端开发服务器（端口 3000）
 npm run client
+```
+
+#### 停止应用
+```bash
+./stop.sh
 ```
 
 ### 访问应用
@@ -168,6 +178,65 @@ workflow-visual-editor/
 - [ ] 添加用户认证和权限管理
 - [ ] 支持工作流导入导出
 - [ ] 增加工作流执行历史记录
+
+## 🔧 故障排除
+
+### 常见问题
+
+#### 1. 应用无法启动
+```bash
+# 检查 Node.js 版本
+node --version  # 需要 v16 或更高版本
+
+# 清理并重新安装依赖
+rm -rf node_modules client/node_modules
+npm install
+cd client && npm install && cd ..
+
+# 使用启动脚本
+./start.sh
+```
+
+#### 2. 端口被占用
+```bash
+# 检查端口占用
+lsof -i :3000  # 检查前端端口
+lsof -i :3001  # 检查后端端口
+
+# 停止占用端口的进程
+pkill -f react-scripts
+pkill -f "server/index.js"
+```
+
+#### 3. 前端页面显示空白
+- 等待前端完全启动（约30秒）
+- 检查浏览器控制台错误
+- 确保后端 API 可访问：`curl http://localhost:3001/api/node-types`
+
+#### 4. WebSocket 连接失败
+- 确保后端服务器正在运行
+- 检查防火墙设置
+- 尝试刷新页面重新连接
+
+#### 5. 工作流保存失败
+- 检查后端日志：`tail -f backend.log`
+- 验证 API 连接：`curl -X POST http://localhost:3001/api/workflows -d '{}' -H 'Content-Type: application/json'`
+
+### 日志文件
+- `backend.log` - 后端服务器日志
+- `frontend.log` - 前端开发服务器日志
+
+### 重置应用
+```bash
+# 停止所有服务
+./stop.sh
+
+# 清理所有数据（工作流会丢失）
+rm -f backend.log frontend.log .backend.pid .frontend.pid
+
+# 重新启动
+./start.sh
+```
 
 ## 🤝 贡献
 

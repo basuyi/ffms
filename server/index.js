@@ -13,7 +13,8 @@ const wss = new WebSocket.Server({ server });
 // 中间件
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '../client/build')));
+// 注释掉静态文件服务，开发模式下由React开发服务器处理
+// app.use(express.static(path.join(__dirname, '../client/build')));
 
 // 内存存储（生产环境应使用数据库）
 let workflows = new Map();
@@ -257,10 +258,13 @@ async function executeNode(workflow, execution, node) {
   }
 }
 
-// 服务静态文件
+// 开发模式下不提供静态文件路由
+// 生产模式下取消注释下面的代码
+/*
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });
+*/
 
 const PORT = process.env.PORT || 3001;
 
