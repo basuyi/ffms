@@ -81,7 +81,7 @@ function App() {
 
   // WebSocket 连接
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:9000');
+    const ws = new WebSocket('ws://localhost:3001');
     
     ws.onopen = () => {
       console.log('WebSocket 连接已建立');

@@ -1,0 +1,161 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process');
+const fs = require('fs');
+
+console.log('🌐 启动真实浏览器测试...\n');
+
+// 创建测试HTML文件
+const testHtml = `
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>浏览器连接测试</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            max-width: 800px; 
+            margin: 50px auto; 
+            padding: 20px; 
+            background: #f0f0f0;
+        }
+        .result { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border-radius: 5px; 
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>🧪 工作流编辑器连接测试</h1>
+    
+    <div id="results"></div>
+    
+    <div class="result info">
+        <h3>📋 测试说明</h3>
+        <p>这个页面会自动测试到工作流编辑器的连接。</p>
+        <p>如果您能看到这个页面，说明浏览器可以正常访问本地服务器。</p>
+    </div>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = 'result ' + type;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        async function runTests() {
+            addResult('🚀 开始连接测试...', 'info');
+            
+            // 测试1: 基本连接
+            try {
+                addResult('📡 测试基本服务器连接...', 'info');
+                const response = await fetch('http://localhost:3001/api/node-types');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('✅ 服务器连接成功！API返回正常数据', 'success');
+                    addResult('📊 节点类型数量: ' + Object.keys(data).length, 'info');
+                } else {
+                    addResult('⚠️ 服务器响应异常: ' + response.status, 'error');
+                }
+            } catch (error) {
+                addResult('❌ 连接失败: ' + error.message, 'error');
+            }
+            
+            // 测试2: 主页面
+            try {
+                addResult('🎨 测试主页面访问...', 'info');
+                const response = await fetch('http://localhost:3001/');
+                
+                if (response.ok) {
+                    const html = await response.text();
+                    if (html.includes('root') && html.includes('React')) {
+                        addResult('✅ 主页面加载正常！', 'success');
+                        addResult('<a href="http://localhost:3001" target="_blank">🔗 点击这里打开工作流编辑器</a>', 'success');
+                    } else {
+                        addResult('⚠️ 主页面内容异常', 'error');
+                    }
+                } else {
+                    addResult('❌ 主页面访问失败: ' + response.status, 'error');
+                }
+            } catch (error) {
+                addResult('❌ 主页面测试失败: ' + error.message, 'error');
+            }
+            
+            // 测试3: 静态资源
+            try {
+                addResult('📦 测试静态资源...', 'info');
+                const jsResponse = await fetch('http://localhost:3001/static/js/main.8c7adeed.js');
+                const cssResponse = await fetch('http://localhost:3001/static/css/main.9a5a5199.css');
+                
+                if (jsResponse.ok && cssResponse.ok) {
+                    addResult('✅ 静态资源(JS/CSS)加载正常！', 'success');
+                } else {
+                    addResult('⚠️ 部分静态资源加载失败', 'error');
+                }
+            } catch (error) {
+                addResult('❌ 静态资源测试失败: ' + error.message, 'error');
+            }
+            
+            addResult('🎯 测试完成！如果上述测试都通过，您的工作流编辑器应该可以正常访问。', 'info');
+        }
+        
+        // 页面加载后自动运行测试
+        window.onload = () => {
+            setTimeout(runTests, 1000);
+        };
+    </script>
+</body>
+</html>
+`;
+
+// 写入测试文件
+fs.writeFileSync('/workspace/browser-test.html', testHtml);
+
+console.log('📝 创建了浏览器测试页面: /workspace/browser-test.html');
+
+// 启动简单HTTP服务器来提供测试页面
+const server = spawn('python3', ['-m', 'http.server', '9999'], {
+    cwd: '/workspace',
+    stdio: 'pipe'
+});
+
+console.log('🌐 启动测试服务器在端口 9999...');
+
+server.stdout.on('data', (data) => {
+    console.log('📡 服务器输出:', data.toString().trim());
+});
+
+server.stderr.on('data', (data) => {
+    console.log('⚠️ 服务器错误:', data.toString().trim());
+});
+
+setTimeout(() => {
+    console.log('\n🧪 浏览器测试已准备就绪！');
+    console.log('');
+    console.log('📱 请在浏览器中访问以下地址进行测试：');
+    console.log('   🔍 测试页面: http://localhost:9999/browser-test.html');
+    console.log('   🎨 工作流编辑器: http://localhost:3001');
+    console.log('');
+    console.log('💡 测试页面会自动检测工作流编辑器的连接状态');
+    console.log('   如果测试页面可以访问，但工作流编辑器不行，');
+    console.log('   那问题可能出在JavaScript加载或React应用初始化上。');
+    console.log('');
+    console.log('⏹️ 按 Ctrl+C 停止测试服务器');
+}, 2000);
+
+// 优雅退出
+process.on('SIGINT', () => {
+    console.log('\n🛑 停止测试服务器...');
+    server.kill();
+    process.exit();
+});
