@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作流编辑器 - 访问测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+        }
+        .title {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .access-links {
+            margin: 30px 0;
+        }
+        .access-link {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 10px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .access-link:hover {
+            background: #5a6fd8;
+        }
+        .features {
+            text-align: left;
+            margin: 30px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .feature {
+            margin: 8px 0;
+            color: #28a745;
+        }
+        .test-results {
+            margin: 20px 0;
+            text-align: left;
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">🎨 可视化工作流编辑器</div>
+        
+        <div id="status" class="status loading">
+            🔍 正在检测服务器状态...
+        </div>
+
+        <div class="access-links">
+            <a href="http://localhost:3001" class="access-link" target="_blank">
+                🌐 主要访问地址
+            </a>
+            <a href="http://127.0.0.1:3001" class="access-link" target="_blank">
+                🔄 备用访问地址
+            </a>
+        </div>
+
+        <div class="features">
+            <h3>✨ 功能特性</h3>
+            <div class="feature">✅ 拖拽式可视化编辑</div>
+            <div class="feature">✅ 8种节点类型支持</div>
+            <div class="feature">✅ 实时工作流执行</div>
+            <div class="feature">✅ WebSocket实时通信</div>
+            <div class="feature">✅ 工作流保存管理</div>
+            <div class="feature">✅ 响应式界面设计</div>
+        </div>
+
+        <div id="test-results" class="test-results" style="display: none;">
+            <h3>🧪 连接测试结果</h3>
+            <div id="test-list"></div>
+        </div>
+
+        <div style="margin-top: 30px; color: #666;">
+            <p>📋 如果访问有问题，请检查：</p>
+            <p>• 服务器是否运行在端口 3001</p>
+            <p>• 防火墙是否阻止了端口访问</p>
+            <p>• 浏览器是否清除了缓存</p>
+        </div>
+    </div>
+
+    <script>
+        async function testConnection() {
+            const statusDiv = document.getElementById('status');
+            const testResultsDiv = document.getElementById('test-results');
+            const testListDiv = document.getElementById('test-list');
+            
+            const urls = [
+                { name: 'localhost:3001', url: 'http://localhost:3001/api/node-types' },
+                { name: '127.0.0.1:3001', url: 'http://127.0.0.1:3001/api/node-types' }
+            ];
+            
+            let successCount = 0;
+            let testResults = [];
+            
+            for (const urlInfo of urls) {
+                try {
+                    const response = await fetch(urlInfo.url);
+                    if (response.ok) {
+                        successCount++;
+                        testResults.push({
+                            name: urlInfo.name,
+                            status: 'success',
+                            message: 'API连接正常'
+                        });
+                    } else {
+                        testResults.push({
+                            name: urlInfo.name,
+                            status: 'error',
+                            message: `HTTP ${response.status}`
+                        });
+                    }
+                } catch (error) {
+                    testResults.push({
+                        name: urlInfo.name,
+                        status: 'error',
+                        message: '连接失败'
+                    });
+                }
+            }
+            
+            // 显示测试结果
+            testResultsDiv.style.display = 'block';
+            testListDiv.innerHTML = testResults.map(result => {
+                const statusClass = result.status === 'success' ? 'success' : 'error';
+                const icon = result.status === 'success' ? '✅' : '❌';
+                return `<div class="test-item status ${statusClass}">
+                    ${icon} ${result.name}: ${result.message}
+                </div>`;
+            }).join('');
+            
+            // 更新总体状态
+            if (successCount > 0) {
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = `🎉 服务器运行正常！找到 ${successCount} 个可用连接`;
+            } else {
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = '❌ 无法连接到服务器，请检查服务是否启动';
+            }
+        }
+        
+        // 页面加载时开始测试
+        window.onload = function() {
+            setTimeout(testConnection, 1000);
+        };
+    </script>
+</body>
+</html>

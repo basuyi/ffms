@@ -1,2 +1,247 @@
-ffms
-====
+# 可视化工作流编辑器
+
+一个基于 React 和 Node.js 的可视化工作流编辑器，支持拖拽式创建工作流，实时执行监控，以及工作流的保存和管理。
+
+## 🚀 功能特性
+
+### 核心功能
+- 🎨 **可视化编辑器**: 拖拽式界面，直观创建工作流
+- 🔗 **节点连接**: 支持多种节点类型和连接方式
+- ⚡ **实时执行**: WebSocket 实时监控工作流执行状态
+- 💾 **持久化存储**: 保存和加载工作流配置
+- 📱 **响应式设计**: 适配各种屏幕尺寸
+
+### 支持的节点类型
+- **开始节点**: 工作流的起点
+- **结束节点**: 工作流的终点
+- **任务节点**: 执行具体的任务操作
+- **条件判断**: 根据条件进行分支判断
+- **并行处理**: 同时执行多个分支
+- **合并节点**: 合并多个分支的结果
+- **延时节点**: 延时等待指定时间
+- **API调用**: 调用外部API接口
+
+## 🛠️ 技术栈
+
+### 前端
+- React 19
+- Material-UI (MUI)
+- React Flow (@xyflow/react)
+- WebSocket 客户端
+
+### 后端
+- Node.js
+- Express.js
+- WebSocket (ws)
+- UUID
+
+## 📦 安装和运行
+
+### 环境要求
+- Node.js 16+
+- npm 或 yarn
+
+### 安装依赖
+```bash
+# 安装根目录依赖（后端）
+npm install
+
+# 安装前端依赖
+cd client && npm install
+```
+
+### 启动应用
+
+#### 方法一：使用启动脚本（推荐）
+```bash
+./start.sh
+```
+
+#### 方法二：同时启动前后端
+```bash
+npm run dev
+```
+
+#### 方法三：分别启动
+```bash
+# 启动后端服务器（端口 3001）
+npm run server
+
+# 启动前端开发服务器（端口 3000）
+npm run client
+```
+
+#### 停止应用
+```bash
+./stop.sh
+```
+
+### 访问应用
+打开浏览器访问 [http://localhost:3000](http://localhost:3000)
+
+## 🎯 使用指南
+
+### 创建工作流
+1. 点击右下角的 **+** 按钮打开节点面板
+2. 选择需要的节点类型添加到画布
+3. 点击节点查看和编辑属性
+4. 拖拽连接点来建立节点之间的连接
+5. 点击顶部的**保存**按钮保存工作流
+
+### 编辑节点
+1. 点击选中节点
+2. 在右侧属性面板中编辑节点信息
+3. 根据节点类型配置特定参数：
+   - **任务节点**: 设置任务标题和执行命令
+   - **条件节点**: 配置条件表达式和比较值
+   - **延时节点**: 设置延时时间
+   - **API节点**: 配置URL、HTTP方法和请求参数
+
+### 执行工作流
+1. 确保工作流已保存
+2. 点击顶部的**执行**按钮
+3. 观察节点状态变化和执行进度
+4. 查看右下角的执行状态面板
+
+### 管理工作流
+1. 点击顶部的**打开**按钮查看已保存的工作流
+2. 选择工作流进行加载
+3. 支持删除不需要的工作流
+
+## 🔧 API 接口
+
+### 工作流管理
+- `GET /api/workflows` - 获取所有工作流
+- `GET /api/workflows/:id` - 获取特定工作流
+- `POST /api/workflows` - 创建新工作流
+- `PUT /api/workflows/:id` - 更新工作流
+- `DELETE /api/workflows/:id` - 删除工作流
+
+### 执行管理
+- `POST /api/workflows/:id/execute` - 执行工作流
+- `GET /api/executions/:id` - 获取执行状态
+- `GET /api/node-types` - 获取支持的节点类型
+
+### WebSocket 事件
+- `node_executing` - 节点开始执行
+- `node_completed` - 节点执行完成
+- `execution_completed` - 工作流执行完成
+- `execution_failed` - 工作流执行失败
+
+## 📁 项目结构
+
+```
+workflow-visual-editor/
+├── server/                 # 后端代码
+│   └── index.js           # Express 服务器
+├── client/                # 前端代码
+│   ├── src/
+│   │   ├── components/    # React 组件
+│   │   │   ├── CustomNode.js
+│   │   │   ├── NodePanel.js
+│   │   │   ├── NodePropertiesPanel.js
+│   │   │   ├── WorkflowList.js
+│   │   │   └── ExecutionPanel.js
+│   │   ├── App.js         # 主应用组件
+│   │   └── App.css        # 样式文件
+│   └── package.json       # 前端依赖
+├── package.json           # 后端依赖和脚本
+└── README.md             # 项目文档
+```
+
+## 🎨 界面预览
+
+### 主编辑界面
+- 中央画布区域用于拖拽和连接节点
+- 右侧属性面板显示选中节点的详细信息
+- 顶部工具栏提供保存、打开、执行等功能
+- 右下角浮动按钮用于添加新节点
+
+### 节点类型
+每种节点都有独特的图标和颜色：
+- 🟢 开始节点 (绿色)
+- 🔴 结束节点 (红色)
+- 🔵 任务节点 (蓝色)
+- 🟠 条件节点 (橙色)
+- 🟣 并行节点 (紫色)
+- ⚫ 合并节点 (灰色)
+- 🟤 延时节点 (棕色)
+- 🔵 API节点 (青色)
+
+## 🔮 未来计划
+
+- [ ] 增加更多节点类型（数据库操作、文件处理等）
+- [ ] 支持工作流模板
+- [ ] 添加工作流版本控制
+- [ ] 实现工作流调度功能
+- [ ] 增加数据持久化（数据库存储）
+- [ ] 添加用户认证和权限管理
+- [ ] 支持工作流导入导出
+- [ ] 增加工作流执行历史记录
+
+## 🔧 故障排除
+
+### 常见问题
+
+#### 1. 应用无法启动
+```bash
+# 检查 Node.js 版本
+node --version  # 需要 v16 或更高版本
+
+# 清理并重新安装依赖
+rm -rf node_modules client/node_modules
+npm install
+cd client && npm install && cd ..
+
+# 使用启动脚本
+./start.sh
+```
+
+#### 2. 端口被占用
+```bash
+# 检查端口占用
+lsof -i :3000  # 检查前端端口
+lsof -i :3001  # 检查后端端口
+
+# 停止占用端口的进程
+pkill -f react-scripts
+pkill -f "server/index.js"
+```
+
+#### 3. 前端页面显示空白
+- 等待前端完全启动（约30秒）
+- 检查浏览器控制台错误
+- 确保后端 API 可访问：`curl http://localhost:3001/api/node-types`
+
+#### 4. WebSocket 连接失败
+- 确保后端服务器正在运行
+- 检查防火墙设置
+- 尝试刷新页面重新连接
+
+#### 5. 工作流保存失败
+- 检查后端日志：`tail -f backend.log`
+- 验证 API 连接：`curl -X POST http://localhost:3001/api/workflows -d '{}' -H 'Content-Type: application/json'`
+
+### 日志文件
+- `backend.log` - 后端服务器日志
+- `frontend.log` - 前端开发服务器日志
+
+### 重置应用
+```bash
+# 停止所有服务
+./stop.sh
+
+# 清理所有数据（工作流会丢失）
+rm -f backend.log frontend.log .backend.pid .frontend.pid
+
+# 重新启动
+./start.sh
+```
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request 来改进这个项目！
+
+## 📄 许可证
+
+MIT License

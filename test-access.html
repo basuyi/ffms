@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作流编辑器 - 访问测试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .success {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4caf50;
+        }
+        .warning {
+            background: rgba(255, 152, 0, 0.2);
+            border-color: #ff9800;
+        }
+        .error {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: #f44336;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+            word-wrap: break-word;
+        }
+        .section {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 可视化工作流编辑器</h1>
+        
+        <div class="section">
+            <h3>📊 服务状态检查</h3>
+            <div id="backend-status" class="status">
+                <strong>后端服务:</strong> <span id="backend-text">检查中...</span>
+            </div>
+            <div id="frontend-status" class="status">
+                <strong>前端服务:</strong> <span id="frontend-text">检查中...</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🔗 访问链接</h3>
+            <a href="http://localhost:3000" class="btn" target="_blank">📱 打开前端界面</a>
+            <a href="http://localhost:3001/api/node-types" class="btn" target="_blank">🔌 测试后端API</a>
+        </div>
+
+        <div class="section">
+            <h3>🛠️ 故障排除</h3>
+            
+            <h4>方法1: 检查端口</h4>
+            <div class="code">
+                curl http://localhost:3000<br>
+                curl http://localhost:3001/api/node-types
+            </div>
+
+            <h4>方法2: 使用不同地址</h4>
+            <div>
+                <a href="http://127.0.0.1:3000" class="btn" target="_blank">使用 127.0.0.1:3000</a>
+                <a href="http://0.0.0.0:3000" class="btn" target="_blank">使用 0.0.0.0:3000</a>
+            </div>
+
+            <h4>方法3: 清除浏览器缓存</h4>
+            <p>按 Ctrl+F5 (Windows/Linux) 或 Cmd+Shift+R (Mac) 强制刷新</p>
+
+            <h4>方法4: 重启服务</h4>
+            <div class="code">
+                ./stop.sh<br>
+                ./start.sh
+            </div>
+
+            <h4>方法5: 检查防火墙</h4>
+            <p>确保端口 3000 和 3001 没有被防火墙阻挡</p>
+        </div>
+
+        <div class="section">
+            <h3>📋 系统信息</h3>
+            <div class="code">
+                <div>时间: <span id="current-time"></span></div>
+                <div>用户代理: <span id="user-agent"></span></div>
+                <div>当前地址: <span id="current-url"></span></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📞 获取帮助</h3>
+            <p>如果问题仍然存在，请尝试以下步骤：</p>
+            <ol>
+                <li>检查防火墙设置</li>
+                <li>尝试使用不同的浏览器</li>
+                <li>确认网络连接正常</li>
+                <li>查看控制台错误信息</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // 更新系统信息
+        document.getElementById('current-time').textContent = new Date().toLocaleString();
+        document.getElementById('user-agent').textContent = navigator.userAgent;
+        document.getElementById('current-url').textContent = window.location.href;
+
+        // 检查服务状态
+        async function checkBackend() {
+            try {
+                const response = await fetch('/api/node-types');
+                if (response.ok) {
+                    document.getElementById('backend-status').className = 'status success';
+                    document.getElementById('backend-text').textContent = '运行正常 ✅';
+                } else {
+                    document.getElementById('backend-status').className = 'status warning';
+                    document.getElementById('backend-text').textContent = '响应异常 ⚠️';
+                }
+            } catch (error) {
+                document.getElementById('backend-status').className = 'status error';
+                document.getElementById('backend-text').textContent = '连接失败 ❌';
+            }
+        }
+
+        async function checkFrontend() {
+            try {
+                const response = await fetch('/static/js/bundle.js');
+                if (response.ok) {
+                    document.getElementById('frontend-status').className = 'status success';
+                    document.getElementById('frontend-text').textContent = '运行正常 ✅';
+                } else {
+                    document.getElementById('frontend-status').className = 'status warning';
+                    document.getElementById('frontend-text').textContent = '资源异常 ⚠️';
+                }
+            } catch (error) {
+                document.getElementById('frontend-status').className = 'status error';
+                document.getElementById('frontend-text').textContent = '连接失败 ❌';
+            }
+        }
+
+        // 运行检查
+        checkBackend();
+        checkFrontend();
+
+        // 自动重定向到主应用（如果可用）
+        setTimeout(() => {
+            fetch('/static/js/bundle.js')
+                .then(response => {
+                    if (response.ok) {
+                        const redirect = confirm('检测到工作流编辑器正在运行，是否立即跳转？');
+                        if (redirect) {
+                            window.location.href = 'http://localhost:3000';
+                        }
+                    }
+                })
+                .catch(() => {
+                    console.log('前端服务暂时不可用');
+                });
+        }, 3000);
+    </script>
+</body>
+</html>
